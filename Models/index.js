@@ -19,6 +19,9 @@ const User = UserModel(sequelize, Sequelize);
 const Laboratory = LaboratoryModel(sequelize, Sequelize);
 const Transaction = TransactionModel(sequelize, Sequelize);
 
+Transaction.belongsTo(User);
+Transaction.belongsTo(Laboratory);
+
 sequelize.sync({ force: true })
   .then(() => {
     mig_20191027({User, Laboratory}); // Creamos los datos principales

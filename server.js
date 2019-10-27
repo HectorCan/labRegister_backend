@@ -2,11 +2,17 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const app = express();
+const http = require('http').createServer(app);
+const io = require('socket.io')(http);
 dotenv.config();
 
 const PORT = process.env.PORT || 3000;
 // Usamos bodyParser para recibir el JSON correctamente del módulo WIFI
 app.use(bodyParser.json({ type: 'application/json' }))
+
+io.on('connection', (socket) => {
+  console.log('User connected');
+});
 
 // Activamos CORS para que el FRONT END pueda recibir los datos.
 app.use(function(req, res, next) {
@@ -24,8 +30,8 @@ app.get('/', function (req, res) {
 });
 
 // Registramos las rutas
-require('./Routes')(app);
+require('./Routes')(app, io);
 
-app.listen(PORT, function () {
+http.listen(PORT, function () {
   console.log(`APP running on PORT: ${PORT}`);
 });

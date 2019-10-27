@@ -2,14 +2,21 @@ const Sequelize = require('sequelize');
 const moment = require('moment');
 const Op = Sequelize.Op;
 
-module.exports = (model, User, Lab) => {
+module.exports = (model, User, Lab, io) => {
   const Model = model;
 
   const GET = async (req, res) => {
     try {
-      const data = await Model.findAll();
+      const data = await Model.findAll({
+        include: [{
+          model: User, as: 'user'
+        }, {
+          model: Lab, as: 'laboratory'
+        }]
+      });
       return res.status(200).send(data);
     } catch (e) {
+      console.log(e);
       return res.status(422).send(e);
     }
   }
@@ -75,6 +82,11 @@ module.exports = (model, User, Lab) => {
             arrived_at: arrived_at,
             type: type
           });
+
+          transaction.dataValues.user = user;
+          transaction.dataValues.laboratory = lab;
+
+          io.emit('FromAPI', transaction);
 
           return res.status(200).send(transaction);
         } catch (e) {
