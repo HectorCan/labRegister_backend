@@ -11,7 +11,8 @@ dotenv.config();
 
 const sequelize = new Sequelize({
   dialect: 'sqlite',
-  storage: process.env.STORAGE || 'labregister_.db'
+  storage: process.env.STORAGE || 'labregister_.db',
+  logging: false
 });
 
 const User = UserModel(sequelize, Sequelize);
