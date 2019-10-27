@@ -9,14 +9,14 @@ module.exports = (sequelize, type) => {
     userId: {
       type:           type.INTEGER,
       references: {
-        model:        'User',
+        model:        'users',
         key:          'id',
       },
     },
     laboratoryId: {
       type:           type.INTEGER,
       references: {
-        model:        'Laboratory',
+        model:        'Laboratories',
         key:          'id',
       }
     },

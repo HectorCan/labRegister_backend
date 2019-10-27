@@ -1,12 +1,11 @@
 const {
-  User: UserModel,
-  Laboratory: LaboratoryModel,
-  Transaction: TransactionModel,
-} = require('../Models');
+  User,
+  Laboratory,
+  Transaction } = require('../Models');
 
-const UserController = require('./User')(UserModel);
-const LaboratoryController = require('./Laboratory')(LaboratoryModel);
-const TransactionController = require('./Transaction')(TransactionModel);
+const UserController = require('./User')(User);
+const LaboratoryController = require('./Laboratory')(Laboratory);
+const TransactionController = require('./Transaction')(Transaction, User, Laboratory);
 
 module.exports = {
   UserController,
