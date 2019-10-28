@@ -6,14 +6,47 @@ module.exports = (model, User, Lab, io) => {
   const Model = model;
 
   const GET = async (req, res) => {
+    const { filter, sorted } = req.body.params;
+    const whereTransaction = {};
+    const whereUser = {};
+    const whereLab = {};
+
+    filter.forEach((v) => {
+      if (v.id.includes("user")) {
+        v.id = v.id.replace('user.', '');
+        whereUser[v.id] = {
+          [Op.like]: `%${v.value}%`
+        };
+      } else if (v.id.includes("laboratory")) {
+        v.id = v.id.replace('laboratory.', '');
+        whereLab[v.id] = {
+          [Op.like]: `%${v.value}%`
+        };
+      } else {
+        if (v.id.includes("type")) {
+            whereTransaction[v.id] = v.value;
+        } else if (v.id.includes("arrived_at")) {
+          whereTransaction[v.id] = v.value;
+        }else {
+          whereTransaction[v.id] = {
+            [Op.like]: `%${v.value}%`
+          };
+        }
+      }
+    });
+
     try {
       const data = await Model.findAll({
         include: [{
-          model: User, as: 'user'
+          model: User, as: 'user',
+          where: whereUser,
         }, {
-          model: Lab, as: 'laboratory'
-        }]
+          model: Lab, as: 'laboratory',
+          where: whereLab,
+        }],
+        where: whereTransaction,
       });
+
       return res.status(200).send(data);
     } catch (e) {
       console.log(e);
