@@ -11,29 +11,41 @@ module.exports = (model, User, Lab, io) => {
     const whereUser = {};
     const whereLab = {};
 
-    filter.forEach((v) => {
-      if (v.id.includes("user")) {
-        v.id = v.id.replace('user.', '');
-        whereUser[v.id] = {
-          [Op.like]: `%${v.value}%`
-        };
-      } else if (v.id.includes("laboratory")) {
-        v.id = v.id.replace('laboratory.', '');
-        whereLab[v.id] = {
-          [Op.like]: `%${v.value}%`
-        };
-      } else {
-        if (v.id.includes("type")) {
-            whereTransaction[v.id] = v.value;
-        } else if (v.id.includes("arrived_at")) {
-          whereTransaction[v.id] = v.value;
-        }else {
-          whereTransaction[v.id] = {
-            [Op.like]: `%${v.value}%`
-          };
+    if (filter.matricule && filter.matricule != '') {
+        whereUser['matricule'] = {
+          [Op.like]: `%${filter.matricule}%`,
         }
+    }
+
+    if (filter.name && filter.name != '') {
+        whereUser['name'] = {
+          [Op.like]: `%${filter.name}%`,
+        }
+    }
+
+    if (filter.labId && filter.labId != '') {
+      whereLab['id'] = filter.labId;
+    }
+
+    if (filter.type && filter.type != '') {
+      whereTransaction['type'] = filter.type;
+    }
+
+    if (filter.dates) {
+      if (filter.dates.start && filter.dates.start != '') {
+          const start = moment(filter.dates.start).format('YYYY-MM-DD 00:00:00');
+          if (filter.dates.end && filter.dates.end != '') {
+            const end = moment(filter.dates.end).format('YYYY-MM-DD 23:59:59');
+            whereTransaction['arrived_at'] = {
+              [Op.between]: [start, end],
+            };
+          } else {
+            whereTransaction['arrived_at'] = {
+              [Op.gte]: start,
+            };
+          }
       }
-    });
+    }
 
     try {
       const data = await Model.findAll({

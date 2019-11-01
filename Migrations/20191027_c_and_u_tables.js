@@ -15,6 +15,6 @@ module.exports = (Models) => {
   });
 
   Models.Laboratory.create({
-    name: 'Laboratorio de lógistica'
+    name: 'Laboratorio de logística'
   });
 }
